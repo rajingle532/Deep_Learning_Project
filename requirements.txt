@@ -1,0 +1,41 @@
+# ==============================================================================
+# Domain-Generalized Deep Learning for Real-World Plant Disease Recognition
+# Primary Environment Dependencies
+# Compatible with Python 3.10 - 3.12, TensorFlow 2.16+, Keras 3
+# ==============================================================================
+
+# Core Deep Learning Framework
+tensorflow>=2.16.1
+keras>=3.0.0
+
+# Scientific & Numerical Computing
+numpy>=1.26.0,<2.0.0
+scipy>=1.12.0
+pandas>=2.1.0
+scikit-learn>=1.4.0
+
+# Computer Vision & Image Processing
+opencv-python>=4.9.0
+pillow>=10.2.0
+albumentations>=1.4.0
+
+# Visualization & Logging
+matplotlib>=3.8.0
+seaborn>=0.13.0
+tensorboard>=2.16.0
+
+# Web Application Demo
+streamlit>=1.32.0
+
+# Configuration & Utilities
+pyyaml>=6.0.1
+tqdm>=4.66.0
+requests>=2.31.0
+reportlab>=4.0.0
+
+# Testing & Quality Assurance
+pytest>=8.0.0
+
+# Optional Jupyter Environment
+ipykernel>=6.29.0
+notebook>=7.1.0

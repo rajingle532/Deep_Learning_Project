@@ -1,0 +1,44 @@
+{
+  "dataset_sizes": {
+    "source_total": 38542,
+    "source_train": 30824,
+    "source_val": 7718,
+    "target_test": 2572
+  },
+  "color_profile_means": {
+    "source_rgb_mean": [
+      118.75552,
+      124.748665,
+      107.706
+    ],
+    "target_rgb_mean": [
+      124.638415,
+      141.65922,
+      99.17388
+    ],
+    "source_hsv_mean": [
+      76.37488,
+      64.16833,
+      131.429095
+    ],
+    "target_hsv_mean": [
+      46.08804,
+      105.307765,
+      148.03023
+    ]
+  },
+  "image_quality_statistics": {
+    "source": {
+      "brightness_mean": 121.07,
+      "contrast_mean": 41.17,
+      "laplacian_var_mean": 3979.05,
+      "laplacian_var_median": 3304.64
+    },
+    "target": {
+      "brightness_mean": 131.62,
+      "contrast_mean": 51.65,
+      "laplacian_var_mean": 752.9,
+      "laplacian_var_median": 432.39
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "model_file": "best_model.keras",
+  "total_test_samples": 160,
+  "source_in_domain_accuracy": 99.37,
+  "target_out_of_domain_accuracy": 22.5,
+  "target_top3_accuracy": 36.88,
+  "domain_generalization_gap": 76.87,
+  "macro_precision": 18.79,
+  "macro_recall": 22.32,
+  "macro_f1": 16.24
+}

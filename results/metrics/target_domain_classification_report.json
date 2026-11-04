@@ -1,0 +1,182 @@
+{
+  "Apple: Scab": {
+    "precision": 1.0,
+    "recall": 0.5,
+    "f1-score": 0.6666666666666666,
+    "support": 6.0
+  },
+  "Apple: Cedar Rust": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 7.0
+  },
+  "Apple: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 6.0
+  },
+  "Bell Pepper: Bacterial Spot": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 4.0
+  },
+  "Bell Pepper: Healthy": {
+    "precision": 0.3333333333333333,
+    "recall": 0.5,
+    "f1-score": 0.4,
+    "support": 6.0
+  },
+  "Blueberry: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 11.0
+  },
+  "Cherry: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 3.0
+  },
+  "Corn: Gray Leaf Spot": {
+    "precision": 0.045454545454545456,
+    "recall": 0.5,
+    "f1-score": 0.08333333333333333,
+    "support": 2.0
+  },
+  "Corn: Northern Leaf Blight": {
+    "precision": 0.7777777777777778,
+    "recall": 0.5384615384615384,
+    "f1-score": 0.6363636363636364,
+    "support": 13.0
+  },
+  "Corn: Common Rust": {
+    "precision": 0.25,
+    "recall": 0.2,
+    "f1-score": 0.2222222222222222,
+    "support": 5.0
+  },
+  "Grape: Black Rot": {
+    "precision": 0.07692307692307693,
+    "recall": 0.25,
+    "f1-score": 0.11764705882352941,
+    "support": 4.0
+  },
+  "Grape: Healthy": {
+    "precision": 0.3333333333333333,
+    "recall": 0.75,
+    "f1-score": 0.46153846153846156,
+    "support": 4.0
+  },
+  "Peach: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 7.0
+  },
+  "Potato: Early Blight": {
+    "precision": 0.2,
+    "recall": 0.14285714285714285,
+    "f1-score": 0.16666666666666666,
+    "support": 7.0
+  },
+  "Potato: Late Blight": {
+    "precision": 0.5,
+    "recall": 0.2,
+    "f1-score": 0.2857142857142857,
+    "support": 5.0
+  },
+  "Raspberry: Healthy": {
+    "precision": 0.5,
+    "recall": 0.08333333333333333,
+    "f1-score": 0.14285714285714285,
+    "support": 12.0
+  },
+  "Soybean: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 4.0
+  },
+  "Squash: Powdery Mildew": {
+    "precision": 0.3333333333333333,
+    "recall": 0.5,
+    "f1-score": 0.4,
+    "support": 6.0
+  },
+  "Strawberry: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 4.0
+  },
+  "Tomato: Bacterial Spot": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 6.0
+  },
+  "Tomato: Early Blight": {
+    "precision": 0.19047619047619047,
+    "recall": 1.0,
+    "f1-score": 0.32,
+    "support": 4.0
+  },
+  "Tomato: Healthy": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 4.0
+  },
+  "Tomato: Late Blight": {
+    "precision": 0.2,
+    "recall": 0.75,
+    "f1-score": 0.3157894736842105,
+    "support": 8.0
+  },
+  "Tomato: Leaf Mold": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 5.0
+  },
+  "Tomato: Mosaic Virus": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 1.0
+  },
+  "Tomato: Septoria Leaf Spot": {
+    "precision": 0.3333333333333333,
+    "recall": 0.1111111111111111,
+    "f1-score": 0.16666666666666666,
+    "support": 9.0
+  },
+  "Tomato: Yellow Leaf Curl Virus": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1-score": 0.0,
+    "support": 7.0
+  },
+  "micro avg": {
+    "precision": 0.22641509433962265,
+    "recall": 0.225,
+    "f1-score": 0.22570532915360503,
+    "support": 160.0
+  },
+  "macro avg": {
+    "precision": 0.18792462681351568,
+    "recall": 0.22317641206530095,
+    "f1-score": 0.16242465239025267,
+    "support": 160.0
+  },
+  "weighted avg": {
+    "precision": 0.23971844128094127,
+    "recall": 0.225,
+    "f1-score": 0.18926929206844068,
+    "support": 160.0
+  }
+}

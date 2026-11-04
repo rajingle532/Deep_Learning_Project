@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions & packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large Datasets (Do NOT commit 160k+ raw training images to git)
+data/raw/
+data/plantvillage/
+data/plantvillage/**
+plantvillage*/
+data/plantdoc/train/
+data/plantdoc/train/**
+data/plantdoc/test/
+data/plantdoc/test/**
+data/processed/*.zip
+data/processed/*.tar.gz
+
+# Scratch scripts & temporary files
+scratch/
+*.tmp
+
+# Tensorboard logs
+logs/tensorboard/*
+!logs/tensorboard/.gitkeep
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,12 @@
+{
+  "model_name": "resnet50_mixstyle",
+  "hardware_mode": "cpu_float32",
+  "epochs_trained": 1,
+  "in_domain_val_accuracy": 2.82,
+  "in_domain_val_top3": 6.83,
+  "out_of_domain_test_accuracy": 2.92,
+  "out_of_domain_test_top3": 8.75,
+  "domain_gap_delta": -0.09,
+  "relative_transfer_ratio": 103.24,
+  "training_time_seconds": 63.8
+}
