@@ -68,6 +68,14 @@ CROP_FAMILY_MAP = {
 }
 
 # -------------------------------------------------------------
+# 0. SECURE HTML RENDERER (NO COMMONMARK INDENTATION CODE BLOCKS)
+# -------------------------------------------------------------
+def render_html(html_str: str, *args, **kwargs) -> None:
+    """Safely renders HTML without triggering CommonMark indented code blocks."""
+    lines = [line.strip() for line in html_str.splitlines() if line.strip()]
+    st.markdown("\n".join(lines), unsafe_allow_html=True)
+
+
 # 1. PAGE CONFIGURATION
 # -------------------------------------------------------------
 st.set_page_config(
@@ -83,7 +91,7 @@ st.set_page_config(
 tokens_file = APP_DIR / "design_tokens.css"
 tokens_css = tokens_file.read_text(encoding="utf-8") if tokens_file.exists() else ""
 
-st.markdown("<style>" + tokens_css + """
+render_html("<style>" + tokens_css + """
     /* Master Streamlit Viewport & Deep Forest Obsidian Theme */
     .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
         background: radial-gradient(circle at 50% 0%, #0d1e2e 0%, #060b12 50%, #03060a 100%) !important;
@@ -1253,7 +1261,7 @@ st.markdown("<style>" + tokens_css + """
         font-size: 0.75rem;
     }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 
 # -------------------------------------------------------------
@@ -1684,11 +1692,11 @@ def render_voice_advisory(crop_name: str, disease_name: str, certainty_pct: floa
 def render_weather_risk_simulator():
     """Renders the Fungal Sporulation & Weather Risk Simulator widget."""
     with st.expander("🌦️ Field Weather Risk & Fungal Sporulation Index (FSI) Simulator", expanded=False):
-        st.markdown("""
+        render_html("""
         <div style="font-size: 0.82rem; color: #94A3B8; margin-bottom: 12px;">
             Simulate ambient canopy microclimate (temperature, relative humidity, and foliar leaf wetness) to predict high-risk pathogen sporulation windows before spraying.
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         w1, w2, w3 = st.columns(3)
         with w1:
@@ -1718,7 +1726,7 @@ def render_weather_risk_simulator():
             risk_color = "#10B981"
             risk_advice = "Ambient conditions suppress fungal sporulation. No emergency chemical intervention required."
 
-        st.markdown(f"""
+        render_html(f"""
         <div style="background: rgba(10, 18, 30, 0.85); border: 1px solid {risk_color}50; border-radius: 12px; padding: 14px 18px; margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-size: 0.80rem; font-weight: 700; color: {risk_color}; text-transform: uppercase;">{risk_badge}</span>
@@ -1731,13 +1739,13 @@ def render_weather_risk_simulator():
                 <strong>Field Management Action:</strong> {risk_advice}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 # -------------------------------------------------------------
 # 4. SECTION 4: HERO SECTION (IMPRESSIVE DASHBOARD HEADER)
 # -------------------------------------------------------------
-st.markdown("""
+render_html("""
 <div class="hero-header-card">
     <div class="hero-brand-left">
         <div class="hero-logo-box">
@@ -1778,7 +1786,7 @@ st.markdown("""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
 
 # -------------------------------------------------------------
@@ -1802,8 +1810,7 @@ with tab_live:
     active_specimen_desc = st.session_state.get("active_sample_desc", None)
     active_specimen_html = f'<span class="active-specimen-badge">● Active: {active_specimen_desc}</span>' if active_specimen_desc else ''
 
-    st.markdown(
-        f'<div class="quick-demos-container">'
+    render_html(f'<div class="quick-demos-container">'
         f'<div class="quick-demos-header-row">'
         f'<div class="quick-demos-head"><span>⚡ Quick AI Demonstrations</span>{active_specimen_html}</div>'
         f'<span class="quick-demos-sub">1-Click verified laboratory &amp; field specimens with published benchmark scores:</span>'
@@ -1822,15 +1829,13 @@ with tab_live:
     elif "07_Field" in active_path_str: active_btn_key = "btn_pot_field"
 
     if active_btn_key:
-        st.markdown(
+        render_html(
             f"<style>.st-key-{active_btn_key} button {{ "
             f"border-color: #10B981 !important; "
             f"background: linear-gradient(135deg, rgba(16, 185, 129, 0.32) 0%, rgba(6, 182, 212, 0.22) 100%) !important; "
             f"box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important; "
             f"transform: translateY(-2px) !important; "
-            f"}}</style>",
-            unsafe_allow_html=True
-        )
+            f"}}</style>")
 
     d1, d2, d3, d4, d5, d6, d7 = st.columns(7)
     with d1:
@@ -1880,10 +1885,10 @@ with tab_live:
     # LEFT PANEL — LEAF IMAGE ACQUISITION (~45% width)
     with col_input:
         with st.container(border=True):
-            st.markdown("""
+            render_html("""
             <div class="panel-card-title">🌿 Analyze Your Crop</div>
             <div class="panel-card-subtitle">Upload a leaf image to identify potential diseases using AI.</div>
-            """, unsafe_allow_html=True)
+            """)
 
             # Three Input Methods (Segmented Pills)
             input_source = st.pills(
@@ -1950,8 +1955,7 @@ with tab_live:
             # Image Preview & Focal Controls
             if active_image is not None:
                 w_orig, h_orig = active_image.size
-                st.markdown(
-                    f'<div class="specimen-scanner-header">'
+                render_html(f'<div class="specimen-scanner-header">'
                     f'<div class="specimen-scanner-title"><span class="status-pulse-dot" style="width: 7px; height: 7px;"></span><span>Active Specimen Intake</span></div>'
                     f'<span class="specimen-scanner-meta">{w_orig} × {h_orig} px &bull; RGB</span>'
                     f'</div>',
@@ -1963,7 +1967,7 @@ with tab_live:
                 # Image metadata & remove button
                 mcol1, mcol2 = st.columns([2.3, 1.2])
                 with mcol1:
-                    st.markdown(f"<div class='specimen-source-tag'>🏷️ {source_title}</div>", unsafe_allow_html=True)
+                    render_html(f"<div class='specimen-source-tag'>🏷️ {source_title}</div>")
                 with mcol2:
                     if st.button("✕ Reset Specimen", key="btn_remove_active", use_container_width=True):
                         st.session_state.pop("active_sample_path", None)
@@ -2000,27 +2004,27 @@ with tab_live:
             # ---------------------------------------------------------
             # SECTION 6: EXPANDABLE SUPPORTED CROPS EXPLORER
             # ---------------------------------------------------------
-            st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+            render_html("<div style='margin-top: 14px;'></div>")
             with st.expander("🌾 Supported Botanical Crops Explorer (28 Canonical Classes)", expanded=False):
                 search_crop = st.text_input("🔍 Filter Crops:", "", key="crop_search_filter")
                 for crop_name, classes in CROP_GROUPS.items():
                     if search_crop and search_crop.lower() not in crop_name.lower():
                         continue
-                    st.markdown(f"**{crop_name}** (`{len(classes)} diseases`)")
+                    render_html(f"**{crop_name}** (`{len(classes)} diseases`)")
                     for c in classes:
                         st.caption(f"&bull; {CANONICAL_DISPLAY_NAMES[c]}")
 
     # RIGHT PANEL — AI DIAGNOSIS (~55% width)
     with col_pred:
         with st.container(border=True):
-            st.markdown("""
+            render_html("""
             <div class="panel-card-title">🔬 AI Disease Diagnosis</div>
             <div class="panel-card-subtitle">Your intelligent crop health analysis starts here.</div>
-            """, unsafe_allow_html=True)
+            """)
 
             if active_image is None:
                 # SECTION 4: PREMIUM EMPTY DIAGNOSIS STATE (CONNECTED 3-STEP WORKFLOW STEPPER)
-                st.markdown("""<div class="empty-workflow-card">
+                render_html("""<div class="empty-workflow-card">
 <div class="radar-scan-box">
     <svg class="empty-graphic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
@@ -2048,7 +2052,7 @@ with tab_live:
     <div class="stepper-sub">Quantify foliar lesion severity and access certified biological &amp; chemical agronomic regimens</div>
 </div>
 </div>
-</div>""", unsafe_allow_html=True)
+</div>""")
 
             elif model is None:
                 st.error("Model weights file `models/best_model.keras` not found. Please ensure weights are present.")
@@ -2172,7 +2176,7 @@ with tab_live:
                     hero_sub = pathogen_name
 
                 # Completed Progress Stepper Banner
-                st.markdown(f"""
+                render_html(f"""
                 <div class="completed-stepper-bar">
                     <div class="step-chip"><span>✓</span><span>01 Intake Acquired</span></div>
                     <div class="step-divider"></div>
@@ -2180,14 +2184,14 @@ with tab_live:
                     <div class="step-divider"></div>
                     <div class="step-chip"><span>✓</span><span>03 Clinical Rx Formulated</span></div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 # Circular Confidence Gauge Ring SVG
                 ring_color = "#EF4444" if is_uncertain else ("#10B981" if top_prob >= 0.60 else "#F59E0B")
                 gauge_svg_html = render_confidence_ring_svg(top_prob * 100.0, color=ring_color, size=86)
 
                 # SECTION 5.A: PRIMARY DIAGNOSIS CARD WITH CIRCULAR GAUGE
-                st.markdown(f"""
+                render_html(f"""
                 <div class="{box_class} result-fade-in">
                     <div class="diag-hero-main-content">
                         <div class="crop-pill-tag">{pill_header}</div>
@@ -2202,7 +2206,7 @@ with tab_live:
                         {gauge_svg_html}
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 if is_uncertain:
                     st.warning(
@@ -2255,7 +2259,7 @@ with tab_live:
                     disp_crop = crop_category
                     disp_pathogen = "Healthy Foliage" if "healthy" in top_canonical else ("Fungal" if any(t in top_canonical for t in ["blight", "rust", "scab", "rot", "mildew"]) else "Bacterial/Viral")
 
-                st.markdown(f"""
+                render_html(f"""
                 <div class="telemetry-row">
                     <div class="telemetry-item">
                         <div class="telemetry-val">{disp_score}</div>
@@ -2274,11 +2278,11 @@ with tab_live:
                         <div class="telemetry-lbl">Neural Latency</div>
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 # SECTION 5.B.2 PILLAR 2: DISEASE SEVERITY & FOLIAR DAMAGE QUANTIFICATION
                 sev_info = calculate_disease_severity(heatmap, top_canonical)
-                st.markdown(f"""
+                render_html(f"""
                 <div class="severity-card">
                     <div class="severity-header-row">
                         <div class="severity-title">
@@ -2303,19 +2307,19 @@ with tab_live:
                         <strong style="color: #A7F3D0;">Agronomic Protocol:</strong> {sev_info['action_protocol']}
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 # SECTION 5.C PILLAR 2: DIFFERENTIAL DIAGNOSIS WITH INFORMATION-THEORETIC TELEMETRY
                 diff_title = "Top Candidate Matches (Below Safety Bar):" if is_uncertain else "Top-3 Differential Diagnostic Hypotheses:"
                 delta_prob = (top_prob - second_prob) * 100.0 if len(top3_probs) > 1 else top_prob * 100.0
                 certainty_status = "Decisive Consensus" if delta_prob > 35.0 else ("Moderate Discrimination" if delta_prob > 15.0 else "High Co-Occurrence Ambiguity")
 
-                st.markdown(f"""
+                render_html(f"""
                 <div style='display: flex; justify-content: space-between; align-items: center; margin: 12px 0 6px 0;'>
                     <span style='font-size: 0.84rem; font-weight: 700; color: #F8FAFC; text-transform: uppercase; letter-spacing: 0.6px;'>{diff_title}</span>
                     <span style='font-size: 0.72rem; color: #34D399; font-family: "JetBrains Mono", monospace;'>Δ Margin: {delta_prob:.1f}%</span>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 crop_icons = {
                     "potato": "🥔", "tomato": "🍅", "corn": "🌽", "apple": "🍎", 
@@ -2334,7 +2338,7 @@ with tab_live:
                     
                     consensus_badge = " <span style='color: #10B981; font-size: 0.74rem; font-weight:600;'>[Shared Complex]</span>" if (shared_pathology and i == 1 and not is_prior_active) else ""
 
-                    st.markdown(f"""
+                    render_html(f"""
                     <div class="diff-item">
                         <div class="diff-header">
                             <span>{icon} {dname}{consensus_badge}</span>
@@ -2344,22 +2348,22 @@ with tab_live:
                             <div class="diff-fill" style="width: {min(pct, 100.0):.1f}%;"></div>
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
 
-                st.markdown(f"""
+                render_html(f"""
                 <div class="entropy-telemetry-box">
                     <span>Shannon Entropy: <span class="entropy-mono-val">{predictive_entropy:.2f} nats</span></span>
                     <span>Decision Margin: <span class="entropy-mono-val">{certainty_status}</span></span>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 # SECTION 5.D PILLAR 2: GRAD-CAM EXPLAINABLE AI (SLIDER & TRI-VIEW)
-                st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
-                st.markdown("""
+                render_html("<div style='margin-top: 16px;'></div>")
+                render_html("""
                 <div class="panel-card-title" style="font-size: 1.05rem;">
                     <span>🔍 Grad-CAM Explainable AI Saliency Studio</span>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
                 st.caption("Visual explanation of cellular foliar regions that influenced the deep network's prediction. Warm regions confirm biological focus on necrotic lesions.")
 
                 if overlay is not None:
@@ -2387,13 +2391,13 @@ with tab_live:
                             st.caption(f"3. Lesion Overlay (α={heatmap_alpha:.2f})")
 
                 # SECTION 5.E & 5.F: DISEASE INFORMATION & TREATMENT RECOMMENDATIONS
-                st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+                render_html("<div style='margin-top: 14px;'></div>")
                 if is_uncertain:
-                    st.markdown("""
+                    render_html("""
                     <div class="panel-card-title" style="font-size: 1.02rem; margin-bottom: 6px;">
                         <span>🌾 Agronomic Protocol & Clinical Safety Action</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
                     st.info(
                         "🛡️ **Chemical Treatment Protocol Withheld (Clinical Safety Guardrail):**\n\n"
                         "Because diagnostic certainty is below the reliable threshold, spraying targeted fungicides is **NOT recommended** "
@@ -2405,11 +2409,11 @@ with tab_live:
                         "• **Physical Scouting:** Inspect the abaxial (underside) leaf surface with a 10x hand lens for mites, thrips, or aphids."
                     )
                 elif advisory:
-                    st.markdown("""
+                    render_html("""
                     <div class="panel-card-title" style="font-size: 1.05rem; margin-top: 14px; margin-bottom: 8px;">
                         <span>🌾 Clinical Agronomic Treatment &amp; Management Plan</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
 
                     rx_t1, rx_t2, rx_t3, rx_t4 = st.tabs([
                         "🌿 Organic & Biological",
@@ -2419,7 +2423,7 @@ with tab_live:
                     ])
 
                     with rx_t1:
-                        st.markdown(f"""
+                        render_html(f"""
                         <div class="rx-treatment-card rx-card-organic">
                             <div class="rx-card-badge">Biological IPM Standard</div>
                             <div class="rx-card-title">🌿 Certified Organic Bio-Fungicides &amp; Botanical Controls</div>
@@ -2428,10 +2432,10 @@ with tab_live:
                                 <span>Application Frequency: Every 7–10 days during high foliar humidity</span>
                             </div>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
                     with rx_t2:
-                        st.markdown(f"""
+                        render_html(f"""
                         <div class="rx-treatment-card rx-card-chemical">
                             <div class="rx-card-badge" style="background: rgba(245, 158, 11, 0.18); color: #FCD34D; border-color: rgba(245, 158, 11, 0.4);">Systemic Fungicide</div>
                             <div class="rx-card-title">🧪 Targeted Chemical Regimen &amp; Mycelial Inhibition</div>
@@ -2440,10 +2444,10 @@ with tab_live:
                                 <span>⚠️ Pre-Harvest Interval (PHI): Observe 14-day safety window before harvest</span>
                             </div>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
                     with rx_t3:
-                        st.markdown(f"""
+                        render_html(f"""
                         <div class="rx-treatment-card rx-card-preventive">
                             <div class="rx-card-badge" style="background: rgba(6, 182, 212, 0.18); color: #67E8F9; border-color: rgba(6, 182, 212, 0.4);">Cultural Agronomy</div>
                             <div class="rx-card-title">🛡️ Cultural Management &amp; Microclimate Prophylaxis</div>
@@ -2457,10 +2461,10 @@ with tab_live:
                                 <span>Preventive Hygiene Index: High (Reduces primary fungal inoculum by up to 65%)</span>
                             </div>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
                     with rx_t4:
-                        st.markdown(f"""
+                        render_html(f"""
                         <div class="rx-treatment-card rx-card-etiology">
                             <div class="rx-card-badge" style="background: rgba(139, 92, 246, 0.18); color: #C4B5FD; border-color: rgba(139, 92, 246, 0.4);">Pathology Dossier</div>
                             <div class="rx-card-title">🦠 Causal Pathogen &amp; Diagnostic Symptoms</div>
@@ -2472,12 +2476,12 @@ with tab_live:
                                 <span>Taxonomic Authority: CABI Compendium &bull; EPPO Global Database</span>
                             </div>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
                     st.caption("⚠️ *Note: Chemical control advice should be confirmed by a local agricultural extension officer based on regional fungicide resistance and crop stage.*")
 
                     # PILLAR 3.A: MULTILINGUAL VOICE AUDIO ADVISORY
-                    st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+                    render_html("<div style='margin-top: 14px;'></div>")
                     render_voice_advisory(
                         crop_name=crop_category,
                         disease_name=top_display,
@@ -2516,7 +2520,7 @@ with tab_live:
                         st.caption(f"PDF Generation Note: {e}")
 
                     # PILLAR 3.C: FUNGAL OUTBREAK & WEATHER RISK SIMULATOR
-                    st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+                    render_html("<div style='margin-top: 12px;'></div>")
                     render_weather_risk_simulator()
 
 
@@ -2525,10 +2529,10 @@ with tab_live:
 # =============================================================
 with tab_benchmarks:
     with st.container(border=True):
-        st.markdown("""
+        render_html("""
         <div class="panel-card-title">📊 Empirical Proof of Covariate Shift & Domain Generalization</div>
         <div class="panel-card-subtitle">Quantitative evidence demonstrating laboratory-to-field performance degradation and our MixStyle regularization resolution.</div>
-        """, unsafe_allow_html=True)
+        """)
 
         # Top 4 KPI Metrics
         k1, k2, k3, k4 = st.columns(4)
@@ -2537,7 +2541,7 @@ with tab_benchmarks:
         k3.metric("Laplacian Blur Variance", "5.3x", help="5.3-fold increase in optical blur variance in real field foliage")
         k4.metric("Model Parameters", "24.66 M", help="ResNet50 backbone + MixStyle domain adaptation")
 
-    st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+    render_html("<div style='margin-top: 14px;'></div>")
     
     # PILLAR 4: SUB-NAVIGATION FOR SCIENTIFIC LAB
     subtab_paper, subtab_eda, subtab_table = st.tabs([
@@ -2586,7 +2590,7 @@ with tab_benchmarks:
             st.warning(f"Figure file not found at {rel_path}.")
 
     with subtab_eda:
-        st.markdown("##### 🔬 Optical Quality Breakdown & Covariate Shift Analysis")
+        render_html("##### 🔬 Optical Quality Breakdown & Covariate Shift Analysis")
         f1, f2 = st.columns(2)
         with f1:
             with st.container(border=True):
@@ -2644,10 +2648,10 @@ with tab_benchmarks:
 # =============================================================
 with tab_advisory:
     with st.container(border=True):
-        st.markdown("""
+        render_html("""
         <div class="panel-card-title">🌾 Comprehensive 28-Disease Agronomic Advisory Directory</div>
         <div class="panel-card-subtitle">Certified pathogen classification, symptomatology, biological management, and chemical treatment regimens.</div>
-        """, unsafe_allow_html=True)
+        """)
 
         d_col1, d_col2 = st.columns([1, 2])
         with d_col1:
@@ -2668,7 +2672,7 @@ with tab_advisory:
         with st.expander(f"🌿 {dname}", expanded=False):
             ex1, ex2 = st.columns(2)
             with ex1:
-                st.markdown(f"""
+                render_html(f"""
                 <div class="rx-tile" style="margin-bottom: 8px;">
                     <div class="rx-title">🦠 Biological Pathogen</div>
                     <div class="rx-body"><strong>{adv.get('pathogen', 'N/A')}</strong></div>
@@ -2677,9 +2681,9 @@ with tab_advisory:
                     <div class="rx-title">🌿 Organic & Cultural Management</div>
                     <div class="rx-body">{adv.get('organic_treatment', 'N/A')}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
             with ex2:
-                st.markdown(f"""
+                render_html(f"""
                 <div class="rx-tile" style="margin-bottom: 8px;">
                     <div class="rx-title">🔍 Diagnostic Symptoms</div>
                     <div class="rx-body">{adv.get('symptoms', 'N/A')}</div>
@@ -2688,7 +2692,7 @@ with tab_advisory:
                     <div class="rx-title">🧪 Targeted Chemical Fungicide</div>
                     <div class="rx-body">{adv.get('chemical_treatment', 'N/A')}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
 
 # =============================================================
@@ -2696,23 +2700,23 @@ with tab_advisory:
 # =============================================================
 with tab_edge:
     with st.container(border=True):
-        st.markdown("""
+        render_html("""
         <div class="panel-card-title">📱 Mobile Edge Deployment & INT8 Quantization Studio</div>
         <div class="panel-card-subtitle">Engineered for offline agricultural monitoring on smartphones, aerial drones, and Raspberry Pi field units.</div>
-        """, unsafe_allow_html=True)
+        """)
 
         e1, e2 = st.columns([1.2, 1])
         with e1:
-            st.markdown("##### 📦 Model Architecture & Quantization Matrix")
-            st.markdown("""
-            | Specification | Production Keras Model | Quantized TFLite Edge Model |
-            | :--- | :--- | :--- |
-            | **File Format** | `.keras` (Full Weights + Optimizer) | `.tflite` (Quantized FlatBuffer) |
-            | **File Size** | **493 MB** | **23.86 MB (20.6x Compression!)** |
-            | **Precision** | `mixed_float16` | Dynamic INT8 / Pure TFLITE_BUILTINS |
-            | **Target Device** | Cloud GPU / Server (NVIDIA T4 / RTX) | Edge Smartphone (Android / iOS / Pi) |
-            | **Dependencies** | Python, TensorFlow, Keras 3 | Pure TFLite Runtime (Zero external deps) |
-            """)
+            render_html("##### 📦 Model Architecture & Quantization Matrix")
+            st.markdown(
+                "| Specification | Production Keras Model | Quantized TFLite Edge Model |\n"
+                "| :--- | :--- | :--- |\n"
+                "| **File Format** | `.keras` (Full Weights + Optimizer) | `.tflite` (Quantized FlatBuffer) |\n"
+                "| **File Size** | **493 MB** | **23.86 MB (20.6x Compression!)** |\n"
+                "| **Precision** | `mixed_float16` | Dynamic INT8 / Pure TFLITE_BUILTINS |\n"
+                "| **Target Device** | Cloud GPU / Server (NVIDIA T4 / RTX) | Edge Smartphone (Android / iOS / Pi) |\n"
+                "| **Dependencies** | Python, TensorFlow, Keras 3 | Pure TFLite Runtime (Zero external deps) |"
+            )
 
             tflite_file = PROJECT_ROOT / "models" / "edge" / "model.tflite"
             if tflite_file.exists():
@@ -2749,7 +2753,7 @@ predicted_class = np.argmax(output_data)
 # -------------------------------------------------------------
 # 10. SECTION 10 & 13: MINIMAL PREMIUM FOOTER & MODEL SPECS
 # -------------------------------------------------------------
-st.markdown("""
+render_html("""
 <div class="enterprise-footer">
     <div class="footer-top-row">
         <div class="footer-brand">
@@ -2775,4 +2779,4 @@ st.markdown("""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""")

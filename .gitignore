@@ -29,12 +29,8 @@ ENV/
 # Large Datasets (Do NOT commit 160k+ raw training images to git)
 data/raw/
 data/plantvillage/
-data/plantvillage/**
-plantvillage*/
 data/plantdoc/train/
-data/plantdoc/train/**
 data/plantdoc/test/
-data/plantdoc/test/**
 data/processed/*.zip
 data/processed/*.tar.gz
 
