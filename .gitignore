@@ -26,13 +26,14 @@ ENV/
 *.swp
 *.swo
 
-# Large Datasets (Do NOT commit 160k+ raw training images to git)
+# Large Datasets & Inference Caches
 data/raw/
 data/plantvillage/
 data/plantdoc/train/
 data/plantdoc/test/
 data/processed/*.zip
 data/processed/*.tar.gz
+*.npz
 
 # Scratch scripts & temporary files
 scratch/
