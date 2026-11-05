@@ -25,7 +25,8 @@ seaborn>=0.13.0
 tensorboard>=2.16.0
 
 # Web Application Demo
-streamlit>=1.32.0
+streamlit>=1.32.0,<1.42.0
+starlette<0.39.0
 gradio>=4.0.0
 
 # Configuration & Utilities
