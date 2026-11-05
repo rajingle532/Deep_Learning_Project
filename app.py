@@ -194,10 +194,22 @@ def analyze_plant_disease(image, crop_focus, heatmap_alpha):
 * **Inference Latency:** `{latency_ms:.1f} ms`"""
 
         top_preds_dict = {}
-        for idx, prob in zip(top3_indices, top3_probs):
-            c_name = CANONICAL_CLASSES[idx]
-            d_name = CANONICAL_DISPLAY_NAMES.get(c_name, c_name)
-            top_preds_dict[d_name] = float(prob)
+        if is_crop_incompatible:
+            # Show honest raw un-inflated probabilities when rejected to prevent false confidence
+            for idx in top3_indices:
+                c_name = CANONICAL_CLASSES[idx]
+                d_name = f"[Unverified / Low Evidence] {CANONICAL_DISPLAY_NAMES.get(c_name, c_name)}"
+                top_preds_dict[d_name] = float(raw_global_preds[idx])
+        elif is_rejected:
+            for idx, prob in zip(top3_indices, top3_probs):
+                c_name = CANONICAL_CLASSES[idx]
+                d_name = f"[Uncertain / High Entropy] {CANONICAL_DISPLAY_NAMES.get(c_name, c_name)}"
+                top_preds_dict[d_name] = float(prob)
+        else:
+            for idx, prob in zip(top3_indices, top3_probs):
+                c_name = CANONICAL_CLASSES[idx]
+                d_name = CANONICAL_DISPLAY_NAMES.get(c_name, c_name)
+                top_preds_dict[d_name] = float(prob)
 
         advisory = TREATMENT_ADVISORY.get(top_canonical, {})
         if is_rejected and not is_crop_incompatible:
