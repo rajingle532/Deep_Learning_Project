@@ -8,7 +8,7 @@ Paper Reference:
 
 Provides:
 1. Target convolutional layer extraction (e.g. conv5_block3_out or conv5 in ResNet50).
-2. Gradient computation of top predicted class score with respect to feature maps.
+2. Gradient computation of class logit / log-score with respect to feature maps (avoids softmax saturation).
 3. Alpha channel weighting, ReLU rectification, and spatial upsampling.
 4. Jet colormap overlay onto original leaf imagery for agronomic inspection.
 """
@@ -69,7 +69,11 @@ def compute_gradcam_heatmap(
         conv_outputs, predictions = grad_model(image_tensor, training=False)
         if class_idx is None:
             class_idx = tf.argmax(predictions[0])
-        loss = predictions[0, class_idx]
+        
+        # Numerical stability: compute gradient w.r.t log-probability ln(p_c)
+        # to avoid softmax gradient saturation (vanishing gradients when p_c -> 1.0)
+        prob = tf.clip_by_value(predictions[0, class_idx], 1e-7, 1.0)
+        loss = tf.math.log(prob)
 
     # Gradients of class score w.r.t. conv feature maps
     grads = tape.gradient(loss, conv_outputs)
@@ -128,4 +132,3 @@ def overlay_gradcam(
     blended = (alpha * colored_heatmap_rgb.astype(np.float32)) + ((1.0 - alpha) * original_image.astype(np.float32))
     blended = np.clip(blended, 0, 255).astype(np.uint8)
     return blended
-

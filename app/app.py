@@ -1773,19 +1773,19 @@ render_html("""
     <div class="hero-metrics-grid">
         <div class="hero-stat-card">
             <span class="hero-stat-val">99.37%</span>
-            <span class="hero-stat-lbl">In-Domain Val Acc</span>
+            <span class="hero-stat-lbl">Lab Val Acc (Source)</span>
+        </div>
+        <div class="hero-stat-card">
+            <span class="hero-stat-val">22.50%</span>
+            <span class="hero-stat-lbl">Field Zero-Shot (Target)</span>
         </div>
         <div class="hero-stat-card">
             <span class="hero-stat-val">109 ms</span>
-            <span class="hero-stat-lbl">Edge Latency</span>
-        </div>
-        <div class="hero-stat-card">
-            <span class="hero-stat-val">24.66M</span>
-            <span class="hero-stat-lbl">Parameters</span>
+            <span class="hero-stat-lbl">INT8 Edge Latency</span>
         </div>
         <div class="hero-stat-card">
             <span class="hero-stat-val">23.86 MB</span>
-            <span class="hero-stat-lbl">Mobile Size</span>
+            <span class="hero-stat-lbl">Quantized Mobile</span>
         </div>
     </div>
 </div>
@@ -2087,7 +2087,14 @@ with tab_live:
                     if is_prior_active:
                         crop_indices = [CANONICAL_CLASSES.index(k) for k in selected_classes if k in CANONICAL_CLASSES]
                         raw_crop_probs = np.array([raw_global_preds[i] for i in crop_indices])
-                        denom = raw_crop_probs.sum()
+                        crop_evidence_mass = float(raw_crop_probs.sum())
+
+                        # Evidence Mass Gate (≥ 15%):
+                        # Prevents artificial Bayesian confidence inflation when user uploads non-target specimens.
+                        CROP_EVIDENCE_THRESHOLD = 0.15
+                        is_crop_incompatible = (crop_evidence_mass < CROP_EVIDENCE_THRESHOLD)
+
+                        denom = crop_evidence_mass
                         norm_probs = raw_crop_probs / denom if denom > 0 else raw_crop_probs
                         sorted_local = np.argsort(norm_probs)[::-1]
                         top_idx = crop_indices[sorted_local[0]]
@@ -2098,6 +2105,8 @@ with tab_live:
                         top3_indices = [crop_indices[i] for i in sorted_local[:min(3, len(sorted_local))]]
                         top3_probs = [float(norm_probs[i]) for i in sorted_local[:min(3, len(sorted_local))]]
                     else:
+                        is_crop_incompatible = False
+                        crop_evidence_mass = 1.0
                         top3_indices = np.argsort(raw_global_preds)[-3:][::-1]
                         top_idx = top3_indices[0]
                         top_prob = float(raw_global_preds[top_idx])
@@ -2141,8 +2150,9 @@ with tab_live:
                 combined_certainty = (top_prob + second_prob) if (shared_pathology and not is_prior_active) else top_prob
 
                 # Statistical Rejection & Out-of-Distribution Gating
-                # Validated rule: Reject if single prob < 28% and combined signal < 45%, or predictive entropy > 2.35 with low prob < 40%
+                # Multi-Factor Rule: Reject if botanical evidence mismatch, or single prob < 28% & combined < 45%, or entropy > 2.35
                 is_uncertain = (
+                    is_crop_incompatible or
                     (top_prob < 0.28 and combined_certainty < 0.45) or 
                     (predictive_entropy > 2.35 and top_prob < 0.40)
                 )
@@ -2150,10 +2160,16 @@ with tab_live:
                 if is_uncertain:
                     box_class = "diag-hero-box diag-hero-inconclusive"
                     pill_class = "badge-red"
-                    status_text = f"REJECTED SPECIMEN &bull; {top_prob * 100:.1f}% Below Safety Bar"
-                    pill_header = "⚠️ UNCONFIRMED ATYPICAL SPECIMEN"
-                    hero_title = "Uncertain or Unsupported Specimen — Further Agricultural Inspection Recommended"
-                    hero_sub = f"Foliar Ambiguity (Top Signal: {top_display} at {top_prob*100:.1f}%, Entropy: {predictive_entropy:.2f} nats)"
+                    if is_crop_incompatible:
+                        status_text = f"CROP INCOMPATIBILITY WARNING &bull; Low Evidence ({crop_evidence_mass*100:.1f}%)"
+                        pill_header = "⚠️ BOTANICAL MISMATCH / INSUFFICIENT EVIDENCE"
+                        hero_title = f"Specimen Foliar Traits Mismatch Selected Prior: {crop_focus}"
+                        hero_sub = f"Cumulative evidence for {crop_focus} is only {crop_evidence_mass*100:.1f}% (required: ≥15.0%). Global unconstrained AI detection predicts '{global_top_display}' ({global_top_prob*100:.1f}%)."
+                    else:
+                        status_text = f"REJECTED SPECIMEN &bull; {top_prob * 100:.1f}% Below Safety Bar"
+                        pill_header = "⚠️ UNCONFIRMED ATYPICAL SPECIMEN"
+                        hero_title = "Uncertain or Unsupported Specimen — Further Agricultural Inspection Recommended"
+                        hero_sub = f"Foliar Ambiguity (Top Signal: {top_display} at {top_prob*100:.1f}%, Entropy: {predictive_entropy:.2f} nats)"
                 elif is_prior_active:
                     box_class = "diag-hero-box"
                     pill_class = "badge-green" if top_prob >= 0.60 else "badge-amber"
