@@ -5,6 +5,12 @@ Gradio ZeroGPU Production Deployment
 
 import os
 import sys
+
+# Suppress premature CUDA device lookup at startup so ZeroGPU starts gracefully
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
 import time
 from pathlib import Path
 import numpy as np
@@ -12,6 +18,17 @@ from PIL import Image
 import tensorflow as tf
 import keras
 import gradio as gr
+
+try:
+    import spaces
+    SPACES_AVAILABLE = True
+except ImportError:
+    SPACES_AVAILABLE = False
+
+def gpu_decorator(func):
+    if SPACES_AVAILABLE:
+        return spaces.GPU(func)
+    return func
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -57,6 +74,7 @@ CROP_FAMILY_MAP = {
     "Strawberry": [c for c in CANONICAL_CLASSES if c.startswith("Strawberry___")],
 }
 
+@gpu_decorator
 def analyze_plant_disease(image, crop_focus, heatmap_alpha):
     if image is None:
         return None, "### ⚠️ No Image Provided\nPlease upload or select a leaf image specimen.", {}, ""
@@ -164,7 +182,6 @@ def analyze_plant_disease(image, crop_focus, heatmap_alpha):
     return overlay_img, status_md, top_preds_dict, advisory_md
 
 
-# Custom Gradio UI
 custom_theme = gr.themes.Soft(
     primary_hue="emerald",
     neutral_hue="slate",
@@ -227,6 +244,7 @@ with gr.Blocks(theme=custom_theme, title="AgriGuard AI - Plant Disease Recogniti
             fn=analyze_plant_disease,
             inputs=[input_image, crop_focus, heatmap_alpha],
             outputs=[output_heatmap, output_status, output_label, output_advisory],
+            api_name=False,
         )
 
     with gr.Tab("📊 Research Benchmarks & Scientific Audits"):
@@ -245,4 +263,4 @@ with gr.Blocks(theme=custom_theme, title="AgriGuard AI - Plant Disease Recogniti
         )
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
+    demo.launch(server_name="0.0.0.0", server_port=7860, show_api=False)
