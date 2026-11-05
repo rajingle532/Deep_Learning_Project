@@ -2,9 +2,10 @@
 title: AgriGuard AI - Plant Disease Recognition
 emoji: 🌿
 colorFrom: green
-colorTo: emerald
-sdk: streamlit
-app_file: app/app.py
+colorTo: blue
+sdk: gradio
+sdk_version: 5.20.0
+app_file: app.py
 pinned: false
 license: mit
 ---

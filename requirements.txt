@@ -26,6 +26,7 @@ tensorboard>=2.16.0
 
 # Web Application Demo
 streamlit>=1.32.0
+gradio>=4.0.0
 
 # Configuration & Utilities
 pyyaml>=6.0.1
