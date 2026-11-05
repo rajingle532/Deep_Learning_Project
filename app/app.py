@@ -2089,13 +2089,11 @@ with tab_live:
                         raw_crop_probs = np.array([raw_global_preds[i] for i in crop_indices])
                         crop_evidence_mass = float(raw_crop_probs.sum())
 
-                        # Evidence Mass Gate (≥ 15%):
-                        # Prevents artificial Bayesian confidence inflation when user uploads non-target specimens.
-                        CROP_EVIDENCE_THRESHOLD = 0.15
-                        is_crop_incompatible = (crop_evidence_mass < CROP_EVIDENCE_THRESHOLD)
-
-                        denom = crop_evidence_mass
-                        norm_probs = raw_crop_probs / denom if denom > 0 else raw_crop_probs
+                        # Two-Stage Bayesian Prior Conditioning:
+                        # Evaluates hypotheses strictly within selected crop without blanket rejection
+                        is_crop_incompatible = False
+                        denom = crop_evidence_mass if crop_evidence_mass > 1e-7 else 1.0
+                        norm_probs = raw_crop_probs / denom
                         sorted_local = np.argsort(norm_probs)[::-1]
                         top_idx = crop_indices[sorted_local[0]]
                         top_prob = float(norm_probs[sorted_local[0]])
@@ -2150,11 +2148,10 @@ with tab_live:
                 combined_certainty = (top_prob + second_prob) if (shared_pathology and not is_prior_active) else top_prob
 
                 # Statistical Rejection & Out-of-Distribution Gating
-                # Multi-Factor Rule: Reject if botanical evidence mismatch, or single prob < 28% & combined < 45%, or entropy > 2.35
+                # Multi-Factor Rule: Reject if single prob < 28% & combined < 45%, or entropy > 2.35 (without prior)
                 is_uncertain = (
-                    is_crop_incompatible or
                     (top_prob < 0.28 and combined_certainty < 0.45) or 
-                    (predictive_entropy > 2.35 and top_prob < 0.40)
+                    (predictive_entropy > 2.35 and top_prob < 0.40 and not is_prior_active)
                 )
 
                 if is_uncertain:
