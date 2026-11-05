@@ -75,6 +75,15 @@ from src.taxonomy import (
 from src.domain_generalization import MixStyle
 from src.preprocessing import normalize_image
 from src.gradcam import compute_gradcam_heatmap, overlay_gradcam
+from src.hierarchical import (
+    HierarchicalDiagnosticsEngine,
+    HIERARCHICAL_CROP_MAP,
+)
+
+hierarchical_engine = HierarchicalDiagnosticsEngine(
+    crop_confidence_threshold=0.65,
+    crop_entropy_threshold=0.95,
+)
 
 MODEL_PATH = PROJECT_ROOT / "models" / "best_model.keras"
 _cached_model = None
@@ -98,19 +107,6 @@ try:
     get_model()
 except Exception as _e:
     print(f"Model warm-up note: {_e}")
-
-CROP_FAMILY_MAP = {
-    "Auto-Detect (Global)": None,
-    "Potato": [c for c in CANONICAL_CLASSES if c.startswith("potato_")],
-    "Tomato": [c for c in CANONICAL_CLASSES if c.startswith("tomato_")],
-    "Corn": [c for c in CANONICAL_CLASSES if c.startswith("corn_")],
-    "Apple": [c for c in CANONICAL_CLASSES if c.startswith("apple_")],
-    "Grape": [c for c in CANONICAL_CLASSES if c.startswith("grape_")],
-    "Bell Pepper": [c for c in CANONICAL_CLASSES if c.startswith("bell_pepper_")],
-    "Cherry": [c for c in CANONICAL_CLASSES if c.startswith("cherry_")],
-    "Peach": [c for c in CANONICAL_CLASSES if c.startswith("peach_")],
-    "Strawberry": [c for c in CANONICAL_CLASSES if c.startswith("strawberry_")],
-}
 
 def analyze_plant_disease(image, crop_focus, heatmap_alpha, focal_zoom=1.0):
     if image is None:
@@ -145,89 +141,21 @@ def analyze_plant_disease(image, crop_focus, heatmap_alpha, focal_zoom=1.0):
         raw_global_preds = model(tensor_batch, training=False).numpy()[0]
         latency_ms = (time.time() - t0) * 1000.0
 
-        predictive_entropy = float(-np.sum(raw_global_preds * np.log(np.maximum(raw_global_preds, 1e-12))))
-
-        selected_classes = CROP_FAMILY_MAP.get(crop_focus)
-        is_prior_active = (selected_classes is not None and len(selected_classes) > 0)
-
-        if is_prior_active:
-            crop_indices = [CANONICAL_CLASSES.index(k) for k in selected_classes if k in CANONICAL_CLASSES]
-            raw_crop_probs = np.array([raw_global_preds[i] for i in crop_indices])
-            crop_evidence_mass = float(raw_crop_probs.sum())
-
-            # Pure Bayesian Conditioning: evaluate hypotheses strictly over selected crop family
-            denom = crop_evidence_mass if crop_evidence_mass > 1e-7 else 1.0
-            norm_probs = raw_crop_probs / denom
-            sorted_local = np.argsort(norm_probs)[::-1]
-            top_local_idx = sorted_local[0]
-            top_idx = crop_indices[top_local_idx]
-            top_prob = float(norm_probs[top_local_idx])
-            top_canonical = CANONICAL_CLASSES[top_idx]
-            top_display = CANONICAL_DISPLAY_NAMES.get(top_canonical, top_canonical)
-
-            top3_indices = [crop_indices[sorted_local[i]] for i in range(min(3, len(sorted_local)))]
-            top3_probs = [float(norm_probs[sorted_local[i]]) for i in range(min(3, len(sorted_local)))]
-
-            status_md = f"""### 🌿 Botanical Crop Prior Active: `{crop_focus}`
-* **Diagnosed Condition:** **`{top_display}`**
-* **Prior-Conditioned Probability:** **`{top_prob * 100:.1f}%`**
-* **Agronomic Safeguard:** *Bayesian Conditioning Active. Cross-species misclassification (e.g., diagnosing Apple as Corn or Tomato) successfully eliminated.*
-* **Inference Latency:** `{latency_ms:.1f} ms`"""
-
-            top_preds_dict = {}
-            for idx, prob in zip(top3_indices, top3_probs):
-                c_name = CANONICAL_CLASSES[idx]
-                d_name = CANONICAL_DISPLAY_NAMES.get(c_name, c_name)
-                top_preds_dict[d_name] = float(prob)
-        else:
-            top3_indices = np.argsort(raw_global_preds)[-3:][::-1]
-            top_idx = int(top3_indices[0])
-            top_prob = float(raw_global_preds[top_idx])
-            top_canonical = CANONICAL_CLASSES[top_idx]
-            top_display = CANONICAL_DISPLAY_NAMES.get(top_canonical, top_canonical)
-            top3_probs = [float(raw_global_preds[i]) for i in top3_indices]
-
-            ENTROPY_REJECTION_THRESHOLD = 2.35
-            if predictive_entropy > ENTROPY_REJECTION_THRESHOLD or top_prob < 0.35:
-                status_md = f"""### ⚠️ Automated Screening: High Uncertainty / Out-of-Distribution
-* **Candidate Specimen:** `{top_display}`
-* **Uncertainty Entropy:** `{predictive_entropy:.2f} nats` (Exceeds 2.35 nats safety threshold)
-* **Agronomic Recommendation:** *Outdoor background clutter or lighting variation detected. To ensure accurate diagnosis and avoid cross-crop misclassification, please select the crop from **Botanical Crop Prior Conditioning**.*"""
-            else:
-                status_md = f"""### 🔍 Automated Screening Proposal (Unverified Crop Family)
-* **Candidate Condition:** **`{top_display}`**
-* **Model Confidence:** **`{top_prob * 100:.1f}%`**
-* **Agronomic Note:** *Automated global screening without confirmed crop prior. If this leaf belongs to a specific plant (Apple, Potato, Tomato, etc.), select it from the dropdown to ensure certified diagnostic accuracy.*"""
-
-            top_preds_dict = {}
-            for idx, prob in zip(top3_indices, top3_probs):
-                c_name = CANONICAL_CLASSES[idx]
-                d_name = CANONICAL_DISPLAY_NAMES.get(c_name, c_name)
-                top_preds_dict[d_name] = float(prob)
+        # Execute Phase 2: Two-Stage Hierarchical Engine
+        diagnosis = hierarchical_engine.diagnose(
+            raw_global_preds=raw_global_preds,
+            user_crop_prior=crop_focus,
+            latency_ms=latency_ms,
+        )
 
         try:
-            heatmap = compute_gradcam_heatmap(model, tensor_batch, class_idx=top_idx)
+            heatmap = compute_gradcam_heatmap(model, tensor_batch, class_idx=diagnosis.top_disease_idx)
             overlay_bgr = overlay_gradcam(np.array(img_224, dtype=np.uint8), heatmap, alpha=float(heatmap_alpha))
             overlay_img = Image.fromarray(overlay_bgr)
         except Exception:
             overlay_img = img_224
 
-        advisory = TREATMENT_ADVISORY.get(top_canonical, {})
-        urgency = advisory.get('urgency', 'Moderate')
-        desc = advisory.get('description', 'Consult local agricultural extension office.')
-        chem = advisory.get('chemical', 'Standard copper-based fungicide or approved bactericide.')
-        bio = advisory.get('organic', 'Bacillus subtilis or neem extract spray.')
-        prev = advisory.get('prevention', 'Ensure drip irrigation and crop rotation.')
-
-        advisory_md = f"""| Regimen Parameter | Certified Agricultural Guidance |
-| :--- | :--- |
-| **Pathogen Urgency** | `{urgency}` |
-| **Clinical Description** | {desc} |
-| **Chemical Regimen** | {chem} |
-| **Biological / Organic Treatment** | {bio} |
-| **Preventive Management** | {prev} |"""
-
-        return overlay_img, status_md, top_preds_dict, advisory_md
+        return overlay_img, diagnosis.status_markdown, diagnosis.top_conditioned_probs, diagnosis.advisory_markdown
 
     except Exception as exc:
         trace_str = traceback.format_exc()
@@ -262,7 +190,7 @@ with gr.Blocks(theme=custom_theme, title="AgriGuard AI - Plant Disease Recogniti
             with gr.Column(scale=1):
                 input_image = gr.Image(type="pil", label="Upload Leaf Specimen")
                 crop_focus = gr.Dropdown(
-                    choices=["Auto-Detect (Global)", "Potato", "Tomato", "Corn", "Apple", "Grape", "Bell Pepper", "Cherry", "Peach", "Strawberry"],
+                    choices=["Auto-Detect (Global)"] + list(HIERARCHICAL_CROP_MAP.keys()),
                     value="Auto-Detect (Global)",
                     label="Botanical Crop Prior Conditioning",
                 )
