@@ -12,11 +12,16 @@ license: mit
 # 🌿 AgriGuard AI: Enterprise Agricultural Pathology Platform
 > *Domain-Generalized Deep Learning for Real-World Foliar Disease Recognition*
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://agriguardai1.streamlit.app/)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces%20Live-green)](https://huggingface.co/spaces/OmkarRaj/agriguard-ai)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![TensorFlow 2.16+](https://img.shields.io/badge/TensorFlow-2.16%2B-orange.svg)](https://www.tensorflow.org/)
 [![Keras 3](https://img.shields.io/badge/Keras-3.x-red.svg)](https://keras.io/)
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces%20Live-green)](https://huggingface.co/spaces/OmkarRaj/agriguard-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> 🚀 **Live Interactive Web Deployments:**
+> * **Primary Enterprise Web App (Streamlit Cloud):** [https://agriguardai1.streamlit.app/](https://agriguardai1.streamlit.app/)
+> * **Secondary Cloud Studio (Hugging Face Spaces):** [https://huggingface.co/spaces/OmkarRaj/agriguard-ai](https://huggingface.co/spaces/OmkarRaj/agriguard-ai)
 
 ---
 
