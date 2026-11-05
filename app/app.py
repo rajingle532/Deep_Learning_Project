@@ -311,6 +311,7 @@ render_html("<style>" + tokens_css + """
         display: flex;
         gap: 10px;
         flex-shrink: 0;
+        
     }
     .hero-stat-card {
         background: rgba(10, 18, 30, 0.80);
@@ -488,27 +489,30 @@ render_html("<style>" + tokens_css + """
         animation: neonPulse 2.5s infinite;
     }
 
-    /* 7 Demo Buttons: Clean Typography, Lift, & Color-Coded Tiers */
+    /* 8 Demo Buttons: Modern Linear SaaS Specimen Cards */
     .st-key-btn_pot button,
     .st-key-btn_tom button,
     .st-key-btn_crn button,
     .st-key-btn_app button,
     .st-key-btn_grp button,
     .st-key-btn_pep button,
-    .st-key-btn_pot_field button {
-        min-height: 64px !important;
-        font-size: 0.8125rem !important;
+    .st-key-btn_pot_field button,
+    .st-key-btn_quick_reset button {
+        min-height: 68px !important;
+        font-size: 0.86rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.3px !important;
-        background: linear-gradient(145deg, rgba(16, 30, 48, 0.95) 0%, rgba(8, 15, 26, 0.98) 100%) !important;
-        border: 1px solid rgba(16, 185, 129, 0.25) !important;
-        border-radius: 12px !important;
+        letter-spacing: 0.2px !important;
+        background: rgba(14, 22, 36, 0.85) !important;
+        backdrop-filter: blur(14px) !important;
+        -webkit-backdrop-filter: blur(14px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 13px !important;
         color: #F8FAFC !important;
         white-space: pre-line !important;
-        line-height: 1.45 !important;
-        padding: 10px 8px !important;
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+        line-height: 1.42 !important;
+        padding: 10px 12px !important;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     }
     .st-key-btn_pot button:hover,
     .st-key-btn_tom button:hover,
@@ -516,15 +520,16 @@ render_html("<style>" + tokens_css + """
     .st-key-btn_app button:hover,
     .st-key-btn_grp button:hover,
     .st-key-btn_pep button:hover,
-    .st-key-btn_pot_field button:hover {
-        transform: translateY(-3px) scale(1.02) !important;
-        border-color: #10B981 !important;
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.30) 0%, rgba(6, 182, 212, 0.20) 100%) !important;
-        color: #34D399 !important;
-        box-shadow: 0 12px 28px -4px rgba(16, 185, 129, 0.45), 0 0 16px rgba(16, 185, 129, 0.25) !important;
+    .st-key-btn_pot_field button:hover,
+    .st-key-btn_quick_reset button:hover {
+        transform: translateY(-2px) !important;
+        border-color: rgba(16, 185, 129, 0.5) !important;
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.12) 0%, rgba(14, 22, 36, 0.95) 100%) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 10px 24px -4px rgba(0, 0, 0, 0.6), 0 0 16px rgba(16, 185, 129, 0.25) !important;
     }
 
-    /* SOTA Score Color-Coded Accent Borders */
+    /* Modern Minimalist Accent Borders */
     .st-key-btn_pot button,
     .st-key-btn_tom button,
     .st-key-btn_crn button,
@@ -534,7 +539,10 @@ render_html("<style>" + tokens_css + """
     }
     .st-key-btn_grp button,
     .st-key-btn_pep button {
-        border-top: 2.5px solid #F59E0B !important; /* Amber <85% */
+        border-top: 2.5px solid #06B6D4 !important; /* Cyan SOTA */
+    }
+    .st-key-btn_quick_reset button {
+        border-top: 2.5px solid rgba(255, 255, 255, 0.2) !important;
     }
 
     /* Mobile Horizontal Swipe for Quick Demos */
@@ -574,18 +582,18 @@ render_html("<style>" + tokens_css + """
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background: linear-gradient(145deg, rgba(14, 25, 40, 0.88) 0%, rgba(7, 13, 22, 0.95) 100%) !important;
+        background: linear-gradient(180deg, rgba(14, 23, 38, 0.88) 0%, rgba(9, 15, 25, 0.96) 100%) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(16, 185, 129, 0.28) !important;
-        border-radius: 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 18px !important;
         padding: 22px 24px !important;
-        box-shadow: 0 18px 44px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
         transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-        border-color: rgba(16, 185, 129, 0.48) !important;
-        box-shadow: 0 22px 50px -8px rgba(0, 0, 0, 0.88), 0 0 24px rgba(16, 185, 129, 0.16) !important;
+        border-color: rgba(16, 185, 129, 0.38) !important;
+        box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.85), 0 0 20px rgba(16, 185, 129, 0.14) !important;
     }
 
     /* Desktop Sticky Left Column */
@@ -843,24 +851,24 @@ render_html("<style>" + tokens_css + """
     /* 6. PRIMARY DIAGNOSIS CARD & CONFIDENCE GAUGE RING         */
     /* ========================================================= */
     .diag-hero-box {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(15, 26, 42, 0.95) 55%, rgba(6, 182, 212, 0.12) 100%) !important;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.10) 0%, rgba(11, 18, 30, 0.95) 60%, rgba(6, 182, 212, 0.08) 100%) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1.5px solid rgba(16, 185, 129, 0.55) !important;
-        border-left: 7px solid #10B981 !important;
-        border-radius: 18px !important;
-        padding: 20px 24px !important;
+        border: 1px solid rgba(16, 185, 129, 0.45) !important;
+        border-left: 5px solid #10B981 !important;
+        border-radius: 16px !important;
+        padding: 22px 26px !important;
         margin-bottom: 18px !important;
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        gap: 20px !important;
-        box-shadow: 0 16px 42px -8px rgba(0, 0, 0, 0.75), 0 0 28px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-        transition: all 0.28s ease !important;
+        gap: 22px !important;
+        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.75), 0 0 24px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+        transition: all 0.25s ease !important;
     }
     .diag-hero-box:hover {
         transform: translateY(-2px);
-        box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.85), 0 0 34px rgba(16, 185, 129, 0.30);
+        box-shadow: 0 20px 48px -6px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.26);
     }
     .diag-hero-inconclusive {
         background: linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0%, rgba(15, 26, 42, 0.95) 55%, rgba(245, 158, 11, 0.10) 100%) !important;
@@ -945,19 +953,20 @@ render_html("<style>" + tokens_css + """
         margin-bottom: 18px;
     }
     .telemetry-item {
-        background: linear-gradient(145deg, rgba(16, 30, 48, 0.88) 0%, rgba(9, 16, 26, 0.95) 100%) !important;
+        background: rgba(11, 18, 30, 0.85) !important;
         backdrop-filter: blur(14px) !important;
-        border: 1px solid rgba(16, 185, 129, 0.28) !important;
-        border-radius: 14px !important;
-        padding: 13px 10px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-top: 2px solid #10B981 !important;
+        border-radius: 13px !important;
+        padding: 14px 10px !important;
         text-align: center !important;
-        transition: all 0.25s ease !important;
-        box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+        transition: all 0.22s ease !important;
+        box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     }
     .telemetry-item:hover {
         transform: translateY(-2px) !important;
-        border-color: #10B981 !important;
-        box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.75), 0 0 18px rgba(16, 185, 129, 0.25) !important;
+        border-color: rgba(16, 185, 129, 0.5) !important;
+        box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.7), 0 0 16px rgba(16, 185, 129, 0.20) !important;
     }
     .telemetry-val {
         font-size: 1.30rem !important;
@@ -1838,33 +1847,33 @@ with tab_live:
     if active_btn_key:
         render_html(
             f"<style>.st-key-{active_btn_key} button {{ "
-            f"border-color: #10B981 !important; "
-            f"background: linear-gradient(135deg, rgba(16, 185, 129, 0.32) 0%, rgba(6, 182, 212, 0.22) 100%) !important; "
-            f"box-shadow: 0 0 20px rgba(16, 185, 129, 0.5) !important; "
+            f"border: 1.5px solid #10B981 !important; "
+            f"background: linear-gradient(180deg, rgba(16, 185, 129, 0.22) 0%, rgba(14, 22, 36, 0.95) 100%) !important; "
+            f"box-shadow: 0 0 20px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important; "
             f"transform: translateY(-2px) !important; "
             f"}}</style>")
 
     row1_c1, row1_c2, row1_c3, row1_c4 = st.columns(4)
     with row1_c1:
-        if st.button("🥔 Potato (95.4% SOTA)", key="btn_pot", use_container_width=True):
+        if st.button("🥔 Potato\n95.4% SOTA", key="btn_pot", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/01_Potato_Early_Blight_95pct.jpg"
             st.session_state["active_sample_desc"] = "Potato: Early Blight (95.4% Benchmark)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🥔 Potato (Solanaceae)"
     with row1_c2:
-        if st.button("🍅 Tomato (92.2% SOTA)", key="btn_tom", use_container_width=True):
+        if st.button("🍅 Tomato\n92.2% SOTA", key="btn_tom", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/02_Tomato_Early_Blight_92pct.jpg"
             st.session_state["active_sample_desc"] = "Tomato: Early Blight (92.2% Benchmark)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🍅 Tomato (Solanaceae)"
     with row1_c3:
-        if st.button("🌽 Corn (90.7% SOTA)", key="btn_crn", use_container_width=True):
+        if st.button("🌽 Corn\n90.7% SOTA", key="btn_crn", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/03_Corn_Common_Rust_91pct.jpg"
             st.session_state["active_sample_desc"] = "Corn: Common Rust (90.7% Benchmark)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🌽 Corn / Maize"
     with row1_c4:
-        if st.button("🍎 Apple (96.1% SOTA)", key="btn_app", use_container_width=True):
+        if st.button("🍎 Apple\n96.1% SOTA", key="btn_app", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/04_Apple_Scab_96pct.jpg"
             st.session_state["active_sample_desc"] = "Apple: Scab (96.1% Benchmark)"
             st.session_state["active_zoom"] = False
@@ -1872,25 +1881,25 @@ with tab_live:
 
     row2_c1, row2_c2, row2_c3, row2_c4 = st.columns(4)
     with row2_c1:
-        if st.button("🍇 Grape (80.5% SOTA)", key="btn_grp", use_container_width=True):
+        if st.button("🍇 Grape\n80.5% SOTA", key="btn_grp", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/05_Grape_Black_Rot_81pct.jpg"
             st.session_state["active_sample_desc"] = "Grape: Black Rot (80.5% Benchmark)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🍇 Grape (Vitaceae)"
     with row2_c2:
-        if st.button("🫑 Bell Pepper (84.1% SOTA)", key="btn_pep", use_container_width=True):
+        if st.button("🫑 Bell Pepper\n84.1% SOTA", key="btn_pep", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/06_Bell_Pepper_Spot_84pct.jpg"
             st.session_state["active_sample_desc"] = "Bell Pepper: Bacterial Spot (84.1% Benchmark)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🫑 Bell Pepper"
     with row2_c3:
-        if st.button("🌿 Wild Potato (94.6% Field)", key="btn_pot_field", use_container_width=True):
+        if st.button("🌿 Wild Potato\n94.6% Field", key="btn_pot_field", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/07_Field_Potato_Late_Blight_95pct.jpg"
             st.session_state["active_sample_desc"] = "Wild Potato: Late Blight (Real Field Multi-Leaf)"
             st.session_state["active_zoom"] = False
             st.session_state["crop_focus_box"] = "🥔 Potato (Solanaceae)"
     with row2_c4:
-        if st.button("🔄 Reset Specimen", key="btn_quick_reset", use_container_width=True):
+        if st.button("🔄 Reset Specimen\nClear Selection", key="btn_quick_reset", use_container_width=True):
             st.session_state.pop("active_sample_path", None)
             st.session_state.pop("active_sample_desc", None)
             st.session_state["active_zoom"] = False
