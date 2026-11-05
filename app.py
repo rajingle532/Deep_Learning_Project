@@ -20,6 +20,38 @@ import tensorflow as tf
 import keras
 import gradio as gr
 
+# Cross-version Keras 3 deserialization compatibility patch:
+# Drops 'quantization_config' if loading in environments with slightly older Keras 3.x
+try:
+    from keras.src.ops.operation import Operation
+    _orig_op_from_config = Operation.from_config
+
+    @classmethod
+    def _safe_op_from_config(cls, config):
+        if isinstance(config, dict):
+            config = dict(config)
+            config.pop("quantization_config", None)
+        return _orig_op_from_config.__func__(cls, config)
+
+    Operation.from_config = _safe_op_from_config
+except Exception:
+    pass
+
+try:
+    from keras.layers import Layer
+    _orig_layer_from_config = Layer.from_config
+
+    @classmethod
+    def _safe_layer_from_config(cls, config):
+        if isinstance(config, dict):
+            config = dict(config)
+            config.pop("quantization_config", None)
+        return _orig_layer_from_config.__func__(cls, config)
+
+    Layer.from_config = _safe_layer_from_config
+except Exception:
+    pass
+
 # Satisfy Hugging Face ZeroGPU startup scanner without intercepting TensorFlow CPU inference
 try:
     import spaces

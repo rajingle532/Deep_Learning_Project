@@ -6,7 +6,7 @@
 
 # Core Deep Learning Framework
 tensorflow>=2.16.1
-keras>=3.0.0
+keras>=3.4.0
 
 # Scientific & Numerical Computing
 numpy>=1.26.0,<2.0.0
