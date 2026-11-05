@@ -235,3 +235,4 @@ class HierarchicalDiagnosticsEngine:
             status_markdown=status_md,
             advisory_markdown=advisory_md,
         )
+
