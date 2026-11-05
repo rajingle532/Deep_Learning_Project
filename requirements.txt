@@ -5,7 +5,7 @@
 # ==============================================================================
 
 # Core Deep Learning Framework
-tensorflow>=2.16.1
+tensorflow>=2.16.1,<2.18.0
 keras>=3.4.0
 
 # Scientific & Numerical Computing
@@ -15,7 +15,7 @@ pandas>=2.1.0
 scikit-learn>=1.4.0
 
 # Computer Vision & Image Processing
-opencv-python>=4.9.0
+opencv-python-headless>=4.9.0
 pillow>=10.2.0
 albumentations>=1.4.0
 
@@ -33,10 +33,3 @@ pyyaml>=6.0.1
 tqdm>=4.66.0
 requests>=2.31.0
 reportlab>=4.0.0
-
-# Testing & Quality Assurance
-pytest>=8.0.0
-
-# Optional Jupyter Environment
-ipykernel>=6.29.0
-notebook>=7.1.0
