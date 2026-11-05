@@ -1,3 +1,14 @@
+---
+title: AgriGuard AI - Plant Disease Recognition
+emoji: 🌿
+colorFrom: green
+colorTo: emerald
+sdk: streamlit
+app_file: app/app.py
+pinned: false
+license: mit
+---
+
 # 🌿 AgriGuard AI: Enterprise Agricultural Pathology & Domain Generalization Suite
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
