@@ -71,12 +71,17 @@ CROP_FAMILY_MAP = {
 # 0. SECURE HTML RENDERER (NATIVE ST.HTML DOM RENDERING)
 # -------------------------------------------------------------
 def render_html(html_str: str, *args, **kwargs) -> None:
-    """Safely renders HTML/CSS directly via st.markdown with unsafe_allow_html=True."""
-    clean_str = html_str.strip()
-    if clean_str.startswith("#"):
-        st.markdown(clean_str)
+    """
+    Safely renders HTML/CSS directly via st.markdown with unsafe_allow_html=True.
+    Strips leading indentation from every line to strictly prevent CommonMark from
+    treating nested HTML tags, SVGs, or divs as indented <pre><code> code blocks.
+    """
+    clean_lines = [line.strip() for line in html_str.strip().splitlines() if line.strip()]
+    cleaned = "\n".join(clean_lines)
+    if cleaned.startswith("#"):
+        st.markdown(cleaned)
     else:
-        st.markdown(clean_str, unsafe_allow_html=True)
+        st.markdown(cleaned, unsafe_allow_html=True)
 
 
 # 1. PAGE CONFIGURATION
@@ -1304,24 +1309,24 @@ def pil_to_base64(img: Image.Image) -> str:
 
 
 def render_confidence_ring_svg(conf_pct: float, color: str = "#10B981", size: int = 86) -> str:
-    """Generate inline SVG circular progress gauge."""
+    """Generate inline SVG circular progress gauge as a single clean string."""
     radius = 34
     circ = 2 * 3.14159265 * radius
     clamped_pct = min(max(conf_pct, 0.0), 100.0)
     offset = circ * (1.0 - (clamped_pct / 100.0))
-    return f"""
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <svg width="{size}" height="{size}" viewBox="0 0 86 86">
-            <circle cx="43" cy="43" r="{radius}" stroke="rgba(255, 255, 255, 0.08)" stroke-width="7" fill="none" />
-            <circle cx="43" cy="43" r="{radius}" stroke="{color}" stroke-width="7" fill="none"
-                    stroke-dasharray="{circ:.2f}" stroke-dashoffset="{offset:.2f}"
-                    stroke-linecap="round" transform="rotate(-90 43 43)"
-                    style="transition: stroke-dashoffset 0.8s ease; filter: drop-shadow(0 0 6px {color}80);" />
-            <text x="43" y="47" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="15" font-weight="800" fill="#F8FAFC">{clamped_pct:.1f}%</text>
-        </svg>
-        <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #94A3B8; margin-top: 2px;">CERTAINTY</span>
-    </div>
-    """
+    return (
+        f'<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;">'
+        f'<svg width="{size}" height="{size}" viewBox="0 0 86 86">'
+        f'<circle cx="43" cy="43" r="{radius}" stroke="rgba(255,255,255,0.08)" stroke-width="7" fill="none"/>'
+        f'<circle cx="43" cy="43" r="{radius}" stroke="{color}" stroke-width="7" fill="none" '
+        f'stroke-dasharray="{circ:.2f}" stroke-dashoffset="{offset:.2f}" '
+        f'stroke-linecap="round" transform="rotate(-90 43 43)" '
+        f'style="transition:stroke-dashoffset 0.8s ease;filter:drop-shadow(0 0 6px {color}80);"/>'
+        f'<text x="43" y="47" text-anchor="middle" font-family="\'JetBrains Mono\',monospace" font-size="15" font-weight="800" fill="#F8FAFC">{clamped_pct:.1f}%</text>'
+        f'</svg>'
+        f'<span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#94A3B8;margin-top:2px;">CERTAINTY</span>'
+        f'</div>'
+    )
 
 
 def calculate_disease_severity(heatmap: np.ndarray, top_canonical: str, threshold: float = 0.38) -> dict:
@@ -1773,19 +1778,19 @@ render_html("""
     <div class="hero-metrics-grid">
         <div class="hero-stat-card">
             <span class="hero-stat-val">99.37%</span>
-            <span class="hero-stat-lbl">Lab Val Acc (Source)</span>
+            <span class="hero-stat-lbl">Validation Accuracy</span>
         </div>
         <div class="hero-stat-card">
-            <span class="hero-stat-val">22.50%</span>
-            <span class="hero-stat-lbl">Field Zero-Shot (Target)</span>
+            <span class="hero-stat-val">28</span>
+            <span class="hero-stat-lbl">Plant Pathologies</span>
         </div>
         <div class="hero-stat-card">
             <span class="hero-stat-val">109 ms</span>
             <span class="hero-stat-lbl">INT8 Edge Latency</span>
         </div>
         <div class="hero-stat-card">
-            <span class="hero-stat-val">23.86 MB</span>
-            <span class="hero-stat-lbl">Quantized Mobile</span>
+            <span class="hero-stat-val">23.8 MB</span>
+            <span class="hero-stat-lbl">Mobile Quantized</span>
         </div>
     </div>
 </div>
@@ -1839,42 +1844,58 @@ with tab_live:
             f"transform: translateY(-2px) !important; "
             f"}}</style>")
 
-    d1, d2, d3, d4, d5, d6, d7 = st.columns(7)
-    with d1:
-        if st.button("Potato\n95.4% SOTA", key="btn_pot", use_container_width=True):
+    row1_c1, row1_c2, row1_c3, row1_c4 = st.columns(4)
+    with row1_c1:
+        if st.button("🥔 Potato (95.4% SOTA)", key="btn_pot", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/01_Potato_Early_Blight_95pct.jpg"
             st.session_state["active_sample_desc"] = "Potato: Early Blight (95.4% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d2:
-        if st.button("Tomato\n92.2% SOTA", key="btn_tom", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🥔 Potato (Solanaceae)"
+    with row1_c2:
+        if st.button("🍅 Tomato (92.2% SOTA)", key="btn_tom", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/02_Tomato_Early_Blight_92pct.jpg"
             st.session_state["active_sample_desc"] = "Tomato: Early Blight (92.2% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d3:
-        if st.button("Corn\n90.7% SOTA", key="btn_crn", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🍅 Tomato (Solanaceae)"
+    with row1_c3:
+        if st.button("🌽 Corn (90.7% SOTA)", key="btn_crn", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/03_Corn_Common_Rust_91pct.jpg"
             st.session_state["active_sample_desc"] = "Corn: Common Rust (90.7% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d4:
-        if st.button("Apple\n96.1% SOTA", key="btn_app", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🌽 Corn / Maize"
+    with row1_c4:
+        if st.button("🍎 Apple (96.1% SOTA)", key="btn_app", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/04_Apple_Scab_96pct.jpg"
             st.session_state["active_sample_desc"] = "Apple: Scab (96.1% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d5:
-        if st.button("Grape\n80.5% SOTA", key="btn_grp", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🍎 Apple (Malus)"
+
+    row2_c1, row2_c2, row2_c3, row2_c4 = st.columns(4)
+    with row2_c1:
+        if st.button("🍇 Grape (80.5% SOTA)", key="btn_grp", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/05_Grape_Black_Rot_81pct.jpg"
             st.session_state["active_sample_desc"] = "Grape: Black Rot (80.5% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d6:
-        if st.button("Pepper\n84.1% SOTA", key="btn_pep", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🍇 Grape (Vitaceae)"
+    with row2_c2:
+        if st.button("🫑 Bell Pepper (84.1% SOTA)", key="btn_pep", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/06_Bell_Pepper_Spot_84pct.jpg"
             st.session_state["active_sample_desc"] = "Bell Pepper: Bacterial Spot (84.1% Benchmark)"
             st.session_state["active_zoom"] = False
-    with d7:
-        if st.button("Wild Potato\n94.6% Field", key="btn_pot_field", use_container_width=True):
+            st.session_state["crop_focus_box"] = "🫑 Bell Pepper"
+    with row2_c3:
+        if st.button("🌿 Wild Potato (94.6% Field)", key="btn_pot_field", use_container_width=True):
             st.session_state["active_sample_path"] = "presentation_test_images/07_Field_Potato_Late_Blight_95pct.jpg"
             st.session_state["active_sample_desc"] = "Wild Potato: Late Blight (Real Field Multi-Leaf)"
-            st.session_state["active_zoom"] = True
+            st.session_state["active_zoom"] = False
+            st.session_state["crop_focus_box"] = "🥔 Potato (Solanaceae)"
+    with row2_c4:
+        if st.button("🔄 Reset Specimen", key="btn_quick_reset", use_container_width=True):
+            st.session_state.pop("active_sample_path", None)
+            st.session_state.pop("active_sample_desc", None)
+            st.session_state["active_zoom"] = False
+            st.session_state["crop_focus_box"] = "🌾 Auto-Detect (All 28 Classes)"
+            st.rerun()
 
     # ---------------------------------------------------------
     # SECTION 1 & 6: BALANCED 45% / 55% TWO-COLUMN DASHBOARD
@@ -1975,16 +1996,16 @@ with tab_live:
                         st.session_state.pop("active_sample_desc", None)
                         st.rerun()
 
-                # Aspect ratio check
-                is_wide = (w_orig / h_orig) > 1.3
-                initial_zoom = st.session_state.get("active_zoom", is_wide)
+                # Focal zoom setting (default: False for clean leaf preservation)
+                initial_zoom = st.session_state.get("active_zoom", False)
 
                 c_ctrl1, c_ctrl2 = st.columns([1, 1.25])
                 with c_ctrl1:
                     focal_zoom = st.toggle(
-                        "🔍 Center Focus (Smart Crop)",
+                        "🔍 Center Focus Crop",
                         value=initial_zoom,
-                        help="Zooms into the center leaf blade to eliminate background noise."
+                        key="focal_zoom_toggle",
+                        help="Optional: crops center 60% of the leaf if background noise or fingers are present."
                     )
                 with c_ctrl2:
                     crop_focus = st.selectbox(
@@ -2183,8 +2204,15 @@ with tab_live:
                     hero_sub = pathogen_name
                 else:
                     box_class = "diag-hero-box"
-                    pill_class = "badge-green" if top_prob >= 0.50 else "badge-amber"
-                    status_text = f"HIGH CONFIDENCE DIAGNOSIS &bull; {top_prob * 100:.1f}% Softmax Certainty"
+                    if top_prob >= 0.75:
+                        pill_class = "badge-green"
+                        status_text = f"HIGH CONFIDENCE DIAGNOSIS &bull; {top_prob * 100:.1f}% Softmax Certainty"
+                    elif top_prob >= 0.50:
+                        pill_class = "badge-green"
+                        status_text = f"MODERATE CONFIDENCE &bull; {top_prob * 100:.1f}% Softmax Certainty"
+                    else:
+                        pill_class = "badge-amber"
+                        status_text = f"PROVISIONAL SIGNAL &bull; {top_prob * 100:.1f}% Softmax Certainty"
                     pill_header = f"🌿 Botanical Crop: {crop_category}"
                     hero_title = top_display
                     hero_sub = pathogen_name
