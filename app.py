@@ -100,15 +100,16 @@ except Exception as _e:
     print(f"Model warm-up note: {_e}")
 
 CROP_FAMILY_MAP = {
-    "Potato": [c for c in CANONICAL_CLASSES if c.startswith("Potato___")],
-    "Tomato": [c for c in CANONICAL_CLASSES if c.startswith("Tomato___")],
-    "Corn": [c for c in CANONICAL_CLASSES if c.startswith("Corn___")],
-    "Apple": [c for c in CANONICAL_CLASSES if c.startswith("Apple___")],
-    "Grape": [c for c in CANONICAL_CLASSES if c.startswith("Grape___")],
-    "Bell Pepper": [c for c in CANONICAL_CLASSES if c.startswith("Bell_Pepper___") or c.startswith("Pepper_bell___")],
-    "Cherry": [c for c in CANONICAL_CLASSES if c.startswith("Cherry___")],
-    "Peach": [c for c in CANONICAL_CLASSES if c.startswith("Peach___")],
-    "Strawberry": [c for c in CANONICAL_CLASSES if c.startswith("Strawberry___")],
+    "Auto-Detect (Global)": None,
+    "Potato": [c for c in CANONICAL_CLASSES if c.startswith("potato_")],
+    "Tomato": [c for c in CANONICAL_CLASSES if c.startswith("tomato_")],
+    "Corn": [c for c in CANONICAL_CLASSES if c.startswith("corn_")],
+    "Apple": [c for c in CANONICAL_CLASSES if c.startswith("apple_")],
+    "Grape": [c for c in CANONICAL_CLASSES if c.startswith("grape_")],
+    "Bell Pepper": [c for c in CANONICAL_CLASSES if c.startswith("bell_pepper_")],
+    "Cherry": [c for c in CANONICAL_CLASSES if c.startswith("cherry_")],
+    "Peach": [c for c in CANONICAL_CLASSES if c.startswith("peach_")],
+    "Strawberry": [c for c in CANONICAL_CLASSES if c.startswith("strawberry_")],
 }
 
 def analyze_plant_disease(image, crop_focus, heatmap_alpha):
