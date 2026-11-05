@@ -19,6 +19,7 @@ import keras
 
 
 @keras.saving.register_keras_serializable(package="PlantDG", name="MixStyle")
+@keras.saving.register_keras_serializable(package="agri_guard", name="MixStyle")
 class MixStyle(keras.layers.Layer):
     """
     MixStyle layer for feature-level Domain Generalization.
@@ -37,7 +38,7 @@ class MixStyle(keras.layers.Layer):
 
     def call(self, x: tf.Tensor, training: bool = None) -> tf.Tensor:
         # Strictly identity passthrough during evaluation/testing
-        if not training:
+        if training is False:
             return x
 
         # Probabilistic application in graph mode using tf.cond
@@ -79,7 +80,18 @@ class MixStyle(keras.layers.Layer):
             # Re-stylize content with synthetic style
             return (sig_mix * norm_x) + mu_mix
 
-        return tf.cond(should_apply, mix_features, lambda: x)
+        if training is True:
+            return tf.cond(should_apply, mix_features, lambda: x)
+
+        if training is None:
+            return tf.cond(should_apply, mix_features, lambda: x)
+
+        # training is a symbolic tf.Tensor
+        return tf.cond(
+            tf.cast(training, tf.bool),
+            lambda: tf.cond(should_apply, mix_features, lambda: x),
+            lambda: x,
+        )
 
     def get_config(self):
         config = super().get_config()
@@ -93,4 +105,3 @@ class MixStyle(keras.layers.Layer):
     @classmethod
     def from_config(cls, config):
         return cls(**config)
-

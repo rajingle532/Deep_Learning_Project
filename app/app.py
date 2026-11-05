@@ -68,12 +68,15 @@ CROP_FAMILY_MAP = {
 }
 
 # -------------------------------------------------------------
-# 0. SECURE HTML RENDERER (NO COMMONMARK INDENTATION CODE BLOCKS)
+# 0. SECURE HTML RENDERER (NATIVE ST.HTML DOM RENDERING)
 # -------------------------------------------------------------
 def render_html(html_str: str, *args, **kwargs) -> None:
-    """Safely renders HTML without triggering CommonMark indented code blocks."""
-    lines = [line.strip() for line in html_str.splitlines() if line.strip()]
-    st.markdown("\n".join(lines), unsafe_allow_html=True)
+    """Safely renders HTML/CSS directly via st.html without triggering CommonMark code-block leaks."""
+    clean_str = html_str.strip()
+    if clean_str.startswith("#"):
+        st.markdown(clean_str)
+    else:
+        st.html(clean_str)
 
 
 # 1. PAGE CONFIGURATION
@@ -1814,8 +1817,7 @@ with tab_live:
         f'<div class="quick-demos-header-row">'
         f'<div class="quick-demos-head"><span>⚡ Quick AI Demonstrations</span>{active_specimen_html}</div>'
         f'<span class="quick-demos-sub">1-Click verified laboratory &amp; field specimens with published benchmark scores:</span>'
-        f'</div></div>',
-        unsafe_allow_html=True,
+        f'</div></div>'
     )
 
     active_path_str = st.session_state.get("active_sample_path", "")
@@ -1891,7 +1893,7 @@ with tab_live:
             """)
 
             # Three Input Methods (Segmented Pills)
-            input_source = st.pills(
+            input_source = st.segmented_control(
                 "Input Method:",
                 options=["Upload Leaf", "Curated Gallery", "Device Camera"],
                 default="Upload Leaf",
@@ -1958,8 +1960,7 @@ with tab_live:
                 render_html(f'<div class="specimen-scanner-header">'
                     f'<div class="specimen-scanner-title"><span class="status-pulse-dot" style="width: 7px; height: 7px;"></span><span>Active Specimen Intake</span></div>'
                     f'<span class="specimen-scanner-meta">{w_orig} × {h_orig} px &bull; RGB</span>'
-                    f'</div>',
-                    unsafe_allow_html=True,
+                    f'</div>'
                 )
 
                 st.image(active_image, use_container_width=True)
@@ -2590,7 +2591,7 @@ with tab_benchmarks:
             st.warning(f"Figure file not found at {rel_path}.")
 
     with subtab_eda:
-        render_html("##### 🔬 Optical Quality Breakdown & Covariate Shift Analysis")
+        st.markdown("##### 🔬 Optical Quality Breakdown & Covariate Shift Analysis")
         f1, f2 = st.columns(2)
         with f1:
             with st.container(border=True):
@@ -2707,7 +2708,7 @@ with tab_edge:
 
         e1, e2 = st.columns([1.2, 1])
         with e1:
-            render_html("##### 📦 Model Architecture & Quantization Matrix")
+            st.markdown("##### 📦 Model Architecture & Quantization Matrix")
             st.markdown(
                 "| Specification | Production Keras Model | Quantized TFLite Edge Model |\n"
                 "| :--- | :--- | :--- |\n"
