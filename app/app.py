@@ -71,12 +71,12 @@ CROP_FAMILY_MAP = {
 # 0. SECURE HTML RENDERER (NATIVE ST.HTML DOM RENDERING)
 # -------------------------------------------------------------
 def render_html(html_str: str, *args, **kwargs) -> None:
-    """Safely renders HTML/CSS directly via st.html without triggering CommonMark code-block leaks."""
+    """Safely renders HTML/CSS directly via st.markdown with unsafe_allow_html=True."""
     clean_str = html_str.strip()
     if clean_str.startswith("#"):
         st.markdown(clean_str)
     else:
-        st.html(clean_str)
+        st.markdown(clean_str, unsafe_allow_html=True)
 
 
 # 1. PAGE CONFIGURATION
